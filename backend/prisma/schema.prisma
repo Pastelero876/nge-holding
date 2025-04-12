@@ -1,1 +1,31 @@
- 
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Asegúrate que sea postgresql
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Usuario Básico (en schema public por defecto o especificar uno)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Contraseña hasheada
+  firstName String?
+  lastName  String?
+  role      String   @default("USER") // Rol básico, se puede expandir
+  isActive  Boolean  @default(true)
+
+  // Clave foránea para multi-tenant
+  companyId String?  // Puede ser opcional si hay usuarios globales/superadmin
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Opcional: Relación con la tabla Company (si existe en core)
+  // company   Company? @relation(fields: [companyId], references: [id])
+
+  @@map("users") // Nombre explícito de la tabla (opcional)
+  // @@schema("public") // Especificar schema si no es el por defecto de la URL
+} 
